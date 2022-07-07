@@ -10,7 +10,7 @@ export default function Upload() {
       // start video feedback so that user can aim camera:
       try {
         let stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" },
+          video: { facingMode: "environment" },
           audio: false,
         });
 
