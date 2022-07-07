@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1 {
+  @apply text-6xl;
+}
+
+h3 {
+  @apply text-3xl my-3;
+}
+
+h4 {
+  @apply m-2;
+}
+
+button {
+  @apply p-2 border-2 border-black rounded;
+}
