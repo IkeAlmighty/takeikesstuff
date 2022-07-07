@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 export default function Upload() {
   const video = useRef();
   const canvas = useRef();
+
+  const [mode, setMode] = useState("video");
 
   useEffect(() => {
     async function startVideo() {
@@ -29,7 +31,8 @@ export default function Upload() {
 
   async function takeSnapShot() {
     // give the camera a sec to load
-    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    setMode("review");
 
     canvas.current
       .getContext("2d")
@@ -65,19 +68,36 @@ export default function Upload() {
 
     if (!upload.ok) {
       alert("error on upload!");
-    } else alert("upload success!");
+    } else {
+      alert("upload success!");
+      setMode("video");
+    }
   }
 
   return (
     <div className="max-w-xl mx-auto text-center">
-      <video ref={video} autoPlay />
-      <canvas className="my-3" ref={canvas} />
+      <video
+        ref={video}
+        autoPlay
+        className={`${mode !== "video" && "hidden"}`}
+      />
 
-      <button className="block my-3 mx-auto" onClick={() => takeSnapShot()}>
+      <button
+        className={`${mode !== "video" && "hidden"} block my-3 mx-auto`}
+        onClick={() => takeSnapShot()}
+      >
         Take Picture
       </button>
 
-      <button className="block my-3 mx-auto" onClick={() => uploadImage()}>
+      <canvas
+        className={`${mode !== "review" && "hidden"} my-3`}
+        ref={canvas}
+      />
+
+      <button
+        className={`${mode !== "review" && "hidden"} block my-3 mx-auto`}
+        onClick={() => uploadImage()}
+      >
         Upload Image
       </button>
 
