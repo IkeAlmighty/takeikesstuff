@@ -5,36 +5,41 @@ export default function Upload() {
   const video = useRef();
   const canvas = useRef();
 
-  async function takeSnapShot() {
-    try {
-      let stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false,
-      });
+  useEffect(() => {
+    async function startVideo() {
+      // start video feedback so that user can aim camera:
+      try {
+        let stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false,
+        });
 
-      let { width, height } = stream.getTracks()[0].getSettings();
-      canvas.current.width = window.innerWidth;
-      canvas.current.height = (window.innerWidth / width) * height;
+        let { width, height } = stream.getTracks()[0].getSettings();
+        canvas.current.width = window.innerWidth;
+        canvas.current.height = (window.innerWidth / width) * height;
 
-      video.current.srcObject = stream;
-
-      // give the camera a sec to load
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      canvas.current
-        .getContext("2d")
-        .drawImage(
-          video.current,
-          0,
-          0,
-          canvas.current.width,
-          canvas.current.height
-        );
-
-      stream.getTracks().forEach((track) => track.stop());
-    } catch (err) {
-      alert(err);
+        video.current.srcObject = stream;
+      } catch (err) {
+        alert(err);
+      }
     }
+
+    startVideo();
+  }, []);
+
+  async function takeSnapShot() {
+    // give the camera a sec to load
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    canvas.current
+      .getContext("2d")
+      .drawImage(
+        video.current,
+        0,
+        0,
+        canvas.current.width,
+        canvas.current.height
+      );
   }
 
   async function uploadImage() {
@@ -65,7 +70,7 @@ export default function Upload() {
 
   return (
     <div className="max-w-xl mx-auto text-center">
-      <video ref={video} autoPlay className="invisible position fixed" />
+      <video ref={video} autoPlay />
       <canvas className="my-3" ref={canvas} />
 
       <button className="block my-3 mx-auto" onClick={() => takeSnapShot()}>
