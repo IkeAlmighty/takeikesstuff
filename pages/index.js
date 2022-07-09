@@ -35,7 +35,7 @@ export default function Home() {
       <Head>
         <title>Take Ike's Stuff</title>
       </Head>
-      <h1>Take My Shit Please</h1>
+      <h1>Take My Stuff Please</h1>
       <h4>Mostly** Free Stuff that YOU COULD OWN</h4>
 
       {objectData.map((obj) => (
