@@ -28,12 +28,12 @@ export default function Edit() {
     fetchAndSetObjectData();
   }, []);
 
-  function deleteImageAndDataByKey(imageKey) {
+  async function deleteImageAndDataByKey(imageKey) {
     // remove key from render list:
     setObjectData(objectData.filter((obj) => obj.key !== imageKey));
 
     deleteImage(imageKey);
-    fetch(`/api/db/deleteObjectDataByKey?key=${imageKey}`);
+    await fetch(`/api/db/deleteObjectDataByKey?key=${imageKey}`);
   }
 
   async function saveImageLabel(imageKey, label) {
