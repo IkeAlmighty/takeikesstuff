@@ -17,3 +17,7 @@ h4 {
 button {
   @apply p-2 border-2 border-black rounded;
 }
+
+body {
+  @apply bg-slate-300;
+}
