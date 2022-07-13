@@ -1,11 +1,15 @@
 import Head from "next/head";
 
 import S3Image from "../lib/components/S3Image";
+import ClaimModal from "../lib/components/ClaimModal";
 import { listObjectKeys } from "../lib/s3";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [objectData, setObjectData] = useState([]);
+
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [claimObjectKey, setClaimModalObjectKey] = useState(undefined);
 
   useEffect(() => {
     async function fetchAndSetObjectData() {
@@ -20,14 +24,55 @@ export default function Home() {
         }
       });
 
-      setObjectData(objects);
+      const filtered = await filterClaimsFromSessionId(objects);
+
+      setObjectData(filtered);
     }
 
     fetchAndSetObjectData();
   }, []);
 
-  function claimToSession(objectKey) {
-    // show popup with data form, prefilled with previous data entered
+  async function filterClaimsFromSessionId(claims) {
+    // get the user session, if there is one:
+    const getSessionResponse = await fetch("api/users/session");
+
+    if (getSessionResponse.ok) {
+      const session = await getSessionResponse.json();
+
+      // filter out all the claims under this session's id
+      // first, get all the claims:
+
+      const sessionIdClaims = await fetch(
+        `/api/users/claims?_id=${session._id}`
+      );
+
+      //TODO: finish implementation of this function
+
+      console.log(sessionIdClaims);
+    }
+
+    return claims;
+  }
+
+  function initClaimModal(objectKey) {
+    setClaimModalObjectKey(objectKey);
+    setShowClaimModal(true);
+  }
+
+  async function confirmClaim(objectKey) {
+    setShowClaimModal(false);
+
+    let addClaimResponse = await fetch(
+      `/api/users/addclaim?objectKey=${objectKey}`
+    );
+
+    // send claimResponse error to alert box
+    if (!addClaimResponse.ok) {
+      alert(await addClaimResponse.text());
+    } else {
+      // remove the item from the ui:
+      setObjectData(objectData.filter((obj) => obj.key !== objectKey));
+    }
   }
 
   return (
@@ -39,12 +84,27 @@ export default function Home() {
       <h4>Mostly** Free Stuff that YOU COULD OWN</h4>
 
       {objectData.map((obj) => (
-        <div key={obj.key} className="border-b-2 border-black pb-2 mb-10">
-          <S3Image imageKey={obj.key} className="h-[300px]" />
-          <button onClick={() => claimToSession(obj.key)}>CLAIM</button>
-          <span className="mx-5">{obj.label}</span>
+        <div
+          key={obj.key}
+          className="border-2 border-black pb-2 mb-10 bg-zinc-200 rounded p-3"
+        >
+          <S3Image imageKey={obj.key} className="h-[300px] mb-3" />
+          <div className="my-3">{obj.label}</div>
+          <button
+            className="bg-slate-100"
+            onClick={() => initClaimModal(obj.key)}
+          >
+            CLAIM
+          </button>
         </div>
       ))}
+
+      <ClaimModal
+        objectKey={claimObjectKey}
+        visible={showClaimModal}
+        onClaim={(objectKey) => confirmClaim(objectKey)}
+        onCancel={() => setShowClaimModal(false)}
+      />
     </div>
   );
 }
