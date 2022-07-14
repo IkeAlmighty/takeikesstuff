@@ -61,7 +61,7 @@ Whenever a user makes their first claim per session, they are asked to provide t
 
 ## Challenge 3: Crypto.createCipheriv
 
-This app stores phone numbers so that I can contact people who have claimed my random house items, so I needed to encrypt those numbers for safely. Javascript has Crypto.createCipheriv for that! It was pretty straight forward but I was slightly thrown off by the initialization vector the first couple times I read the documentation. From what I understand, the initialization vector acts similarly to a seed for a random generator, where it mapps each different random value per input value, depending on the initialization vector. This means that encrypting the word 'hello' with two different initialization vectors results in different results. I don't want my iv value to be random like examples suggest though, because my I will be encrypting and decrypting the same phone number across different sessions. So, I created my encryption function with an optional iv flag.
+This app stores phone numbers so that I can contact people who have claimed my random house items, so I needed to encrypt those numbers for safety. Javascript has Crypto.createCipheriv for that! It was pretty straight forward but I was slightly thrown off by the initialization vector the first couple times I read the documentation. From what I understand, the initialization vector acts similarly to a seed for a random generator, where it maps each different random value per input value, depending on the initialization vector. This means that encrypting the word 'hello' with two different initialization vectors results in different results. I don't want my iv value to be random like examples suggest though, because my I will be encrypting and decrypting the same phone number across different sessions. So, I created my encryption function with an optional iv flag.
 
     export function encrypt(text, useIV = false) {
         /*
@@ -69,7 +69,9 @@ This app stores phone numbers so that I can contact people who have claimed my r
         but I will be using using Buffer.alloc(16) most
         the time, instead of randomBytes
         */
-        const iv = useIV ? crypto.randomBytes(16) : Buffer.alloc(16);
+        const iv = useIV ? crypto.randomBytes(16) : Buffer.alloc(16, 1); // used to ensure uniqueness of each encryption
+
+        const cipher = crypto.createCipheriv(alg, key, iv); // key is defined at the file scope using an environment variable
 
         ...
     }
