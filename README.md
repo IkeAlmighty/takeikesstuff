@@ -76,7 +76,14 @@ This app stores phone numbers so that I can contact people who have claimed my r
         ...
     }
 
-Embarrasingly, I was hung up on how Buffers work and why I kept getting 'error - RangeError: invalid key length' on this function call.
+Embarrasingly, I was hung up on how Buffers work and why I kept getting 'error - RangeError: invalid key length' on this function call. Turns out I just needed to define the key like so:
+
+    const key = Buffer.from(
+        crypto.createHash("sha256").update(ENCRYPTION_CODE).digest("base64"),
+        "base64"
+    );
+
+where ENCRYPTION_CODE is a secret environment variable.
 
 ## Challenge 4: User API Routes
 
