@@ -107,7 +107,7 @@ I ran into some annoying problems due to the way I set up my database. Namely, I
 
 Add to this the fact that I was already storing the actual images in an s3 instance, and not the mongodb instance with the rest of this data, and I realized I probably need to do some rethinking on my database schema.
 
-A solid answer, I think, is to just remove the claims array from user documents, and write a more in depth function that iterates of the s3ObjectData collection to determine what a singular user has claimed. So I changed the previous user document schema from this:
+A solid answer, I think, is to just remove the claims array from user documents, and write a function that iterates of the s3ObjectData collection to determine what a singular user has claimed (this is actually easy with mongodb). So I changed the previous user document schema from this:
 
     {
         _id: ObjectId, // randomly chosen per user
