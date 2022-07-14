@@ -24,7 +24,7 @@ export default function Home() {
         }
       });
 
-      const filtered = await filterClaimsFromSessionId(objects);
+      const filtered = await filterClaimsFromObjects(objects);
 
       setObjectData(filtered);
     }
@@ -32,7 +32,7 @@ export default function Home() {
     fetchAndSetObjectData();
   }, []);
 
-  async function filterClaimsFromSessionId(claims) {
+  async function filterClaimsFromObjects(objects) {
     // get the user session, if there is one:
     const getSessionResponse = await fetch("api/users/session");
 
@@ -40,18 +40,12 @@ export default function Home() {
       const session = await getSessionResponse.json();
 
       // filter out all the claims under this session's id
-      // first, get all the claims:
 
-      const sessionIdClaims = await fetch(
-        `/api/users/claims?_id=${session._id}`
-      );
-
-      //TODO: finish implementation of this function
-
-      console.log(sessionIdClaims);
+      let filtered = objects.filter((obj) => obj.claimedBy !== session._id);
+      return filtered;
     }
 
-    return claims;
+    return objects; // return all the objects if there is no session
   }
 
   function initClaimModal(objectKey) {
