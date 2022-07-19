@@ -46,7 +46,10 @@ export default function MyClaims() {
   }
 
   useEffect(() => {
-    signInAndLoadItems();
+    // FIXME: someone could edit this line in client and add weird non existant phone numbers
+    if (phone.length === 10) {
+      signInAndLoadItems();
+    }
   }, [phone]);
 
   return (

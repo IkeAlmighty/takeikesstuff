@@ -11,6 +11,10 @@ if (!ENCRYPTION_CODE) {
 export default async function handler(req, res) {
   const { phone } = req.query;
 
+  if (phone.length != 10) {
+    res.status(401).end(); // don't create a new phone number unless its valid
+  }
+
   const phoneEncrypted = encrypt(phone);
 
   const client = await clientPromise;
