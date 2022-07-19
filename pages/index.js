@@ -1,9 +1,13 @@
 import Head from "next/head";
+import Link from "next/link";
 
 import S3Image from "../lib/components/S3Image";
 import ClaimModal from "../lib/components/ClaimModal";
+import Item from "../lib/components/Item";
+
 import { listObjectKeys } from "../lib/s3";
 import { useEffect, useState } from "react";
+import { getSession } from "../lib/session";
 
 export default function Home() {
   const [objectData, setObjectData] = useState([]);
@@ -34,11 +38,9 @@ export default function Home() {
 
   async function filterClaimsFromObjects(objects) {
     // get the user session, if there is one:
-    const getSessionResponse = await fetch("api/users/session");
+    const session = await getSession();
 
-    if (getSessionResponse.ok) {
-      const session = await getSessionResponse.json();
-
+    if (session) {
       // filter out all the claims under this session's id
 
       let filtered = objects.filter((obj) => obj.claimedBy !== session._id);
@@ -74,23 +76,22 @@ export default function Home() {
       <Head>
         <title>Take Ike's Stuff</title>
       </Head>
+
+      <div className="w-full text-right">
+        <Link href="/myclaims">
+          <a className="text-blue-700 px-1">See Your Items</a>
+        </Link>
+      </div>
+
       <h1>Take My Stuff Please</h1>
       <h4>Mostly** Free Stuff that YOU COULD OWN</h4>
 
       {objectData.map((obj) => (
-        <div
-          key={obj.key}
-          className="border-2 border-black pb-2 mb-10 bg-zinc-200 rounded p-3"
-        >
-          <S3Image imageKey={obj.key} className="h-[300px] mb-3" />
-          <div className="my-3">{obj.label}</div>
-          <button
-            className="bg-slate-100"
-            onClick={() => initClaimModal(obj.key)}
-          >
-            CLAIM
-          </button>
-        </div>
+        <Item
+          key={obj._id}
+          objectData={obj}
+          onClaim={(key) => initClaimModal(key)}
+        />
       ))}
 
       <ClaimModal

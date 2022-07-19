@@ -25,8 +25,8 @@ export default async function handler(req, res) {
       .db()
       .collection("s3ObjectData")
       .aggregate([
-        { claimedBy: new ObjectId(token._id) },
-        { $addField: { _id: { $toString: "$_id" } } },
+        { $match: { claimedBy: new ObjectId(token._id) } },
+        { $addFields: { _id: { $toString: "$_id" } } },
       ])
       .toArray();
 
@@ -34,6 +34,7 @@ export default async function handler(req, res) {
 
     res.json(claims);
   } catch (err) {
+    console.log(err);
     res.status(401).end(); // return 401 and null payload if the token has been tampered with
   }
 }
