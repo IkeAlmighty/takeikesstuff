@@ -28,27 +28,13 @@ export default function Home() {
         }
       });
 
-      const filtered = await filterClaimsFromObjects(objects);
+      const unclaimed = await objects.filter((ob) => !ob.claimedBy);
 
-      setObjectData(filtered);
+      setObjectData(unclaimed);
     }
 
     fetchAndSetObjectData();
   }, []);
-
-  async function filterClaimsFromObjects(objects) {
-    // get the user session, if there is one:
-    const session = await getSession();
-
-    if (session) {
-      // filter out all the claims under this session's id
-
-      let filtered = objects.filter((obj) => obj.claimedBy !== session._id);
-      return filtered;
-    }
-
-    return objects; // return all the objects if there is no session
-  }
 
   function initClaimModal(objectKey) {
     setClaimModalObjectKey(objectKey);
